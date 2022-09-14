@@ -1,0 +1,170 @@
+<html>
+ <body>
+   <div id="game">
+		<div class="row">
+			<div class="col-12">
+				<h3>Catch the bug -- Welcome <span id="username"></span></h3>
+        <h4>Score: <span id="score"></span></h4>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12 center">
+				<div id="room" style="text-align: center; width: 95%; height: 300px; border: solid 3px black; border-radius: 25px;"> 
+					<div id="ball" style="position: relative; height: 50px; width: 50px; border-radius: 100%; background-color: white;">&nbsp;</div>
+          <div id="target" style="position: relative; height: 36px; width: 30px; border-radius: 25%; background-size: auto 100%; background-image: url(bug.png)">&nbsp;</div>
+				</div>
+			</div>
+		</div>
+  </div>
+  <div id="register">
+    <h2>Data Metamorphosis</h2>
+    <div class="row">
+      <div class="col-12">
+        Who are you? 
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <input type="text" id="name" />
+        <button type="submit" id="enterGame">Enter</button>
+      </div>
+    </div>
+  </div>
+ </body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+
+const socket = io();
+
+const MAX_SPEED = 20; //px/cycle
+const FRAME_RATE = 30;
+const REDRAW_MS = Math.floor(1000/FRAME_RATE);
+const BALL_SIZE = 50;
+const ROOM_HEIGHT = document.querySelector("#room").clientHeight;
+const ROOM_WIDTH = document.querySelector("#room").clientWidth;
+let COLOR = `${Math.round(Math.random()*255).toString(16).padStart(2, "0")}${Math.round(Math.random()*255).toString(16).padStart(2, "0")}${Math.round(Math.random()*255).toString(16).padStart(2, "0")}`;
+let ballTop = 0;
+let ballLeft = 0;
+let xSpeed = 0;
+let ySpeed = 0;
+let targetTop = 0;
+let targetLeft = 0;
+let score = 0;
+let AUTH_SERVER = "";
+let name = "";
+let userId = "";
+
+const randomizeTargetPosition = () => {
+  targetTop = Math.round(Math.random() * (ROOM_HEIGHT - BALL_SIZE * 2)) + BALL_SIZE / 2;
+  console.log(targetTop, ROOM_HEIGHT, BALL_SIZE)
+  targetLeft = Math.round(Math.random() * (ROOM_WIDTH - BALL_SIZE)) + BALL_SIZE / 2;
+}
+
+const drawTarget = () => {
+  document.querySelector("#target").style.top = `${targetTop}px`;
+  document.querySelector("#target").style.left = `${targetLeft}px`;
+}
+
+const writeScore = () => {
+  score += 1;
+  document.querySelector("#score").textContent = score;
+  socket.emit("score", {userId, score});
+}
+
+const checkTarget = () => {
+  const target = document.querySelector("#target").getBoundingClientRect();
+  const ball = document.querySelector("#ball").getBoundingClientRect();
+
+  const overlap = !(
+    target.top > ball.bottom ||
+    target.right < ball.left ||
+    target.bottom < ball.top ||
+    target.left > ball.right
+  );
+
+  if (overlap) {
+    writeScore();
+    randomizeTargetPosition();
+  }
+}
+
+const redraw = () => {
+  ballTop = ballTop + xSpeed;
+  ballLeft = ballLeft + ySpeed;
+  if (ballTop < 0) ballTop = 0;
+  if (ballTop > ROOM_HEIGHT - BALL_SIZE) ballTop = ROOM_HEIGHT - BALL_SIZE;
+  if (ballLeft < 0) ballLeft = 0;
+  if (ballLeft > ROOM_WIDTH - BALL_SIZE) ballLeft = ROOM_WIDTH - BALL_SIZE;
+  document.querySelector("#ball").style.top = `${ballTop}px`;
+  document.querySelector("#ball").style.left = `${ballLeft}px`;
+  drawTarget();
+  checkTarget();
+}
+window.ondeviceorientation = (event) => {
+  socket.emit("orientation", {
+    userId,
+    alpha: event.alpha,
+    beta: event.beta,
+    gamma: event.gamma
+  });
+  let x = event.beta;
+  let y = event.gamma;
+  if (x > 90) x = 90;
+  if (x < -90) x = -90;
+  if (y > 90) y = 90;
+  if (y < -90) y = -90;
+  xSpeed = MAX_SPEED * x/90;
+  ySpeed = MAX_SPEED * y/90;
+}
+
+const startGame = () => {
+  document.querySelector("#username").textContent = name;
+  document.querySelector("#ball").style.backgroundColor = `#${COLOR}`;
+  document.querySelector("#score").textContent = score;
+
+  document.querySelector("#register").style.display = "none";
+  document.querySelector("#game").style.display = "initial";
+  setInterval(redraw, REDRAW_MS);
+}
+
+const enterGame = () => {
+  document.querySelector("#enterGame").setAttribute("disabled", true);
+  name = document.querySelector("#name").value;
+
+  fetch(`${AUTH_SERVER}/register/${name}/${COLOR}`).then(resp => resp.json()).then(data => {
+    localStorage.setItem("id", data.id);
+    userId = data.id;
+    startGame();
+  });
+}
+
+const initializeGame = () => {
+  let id = localStorage.getItem("id");
+  if (id) {
+    fetch(`${AUTH_SERVER}/login/${id}`).then(resp => resp.json()).then(user => {
+      name = user.name;
+      score = user.score;
+      COLOR = user.colour;
+      userId = user._id;
+      startGame();
+    });
+  } else {
+    document.querySelector("#enterGame").addEventListener("click", enterGame);
+  }
+}
+
+randomizeTargetPosition();
+
+document.querySelector("#game").style.display = "none";
+document.querySelector("#register").style.display = "none";
+
+fetch("/config").then(resp => resp.json()).then(config => {
+  AUTH_SERVER = config.AUTH_SERVER;
+  document.querySelector("#register").style.display = "initial";
+}).then(_ => initializeGame());
+
+
+
+</script>
+</html>
