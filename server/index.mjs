@@ -10,6 +10,7 @@ const io = new Server(httpServer, {
 });
 
 const PORT = process.env.PORT || 5000
+const AUTO_PRODUCE_TIMER = 3000;
 
 const KAFKA_BROKER = process.env.KAFKA_BROKER || "kafka:9092";
 const CLIENT_ID = "presentation";
@@ -48,7 +49,7 @@ setInterval(() => {
   if (!PRODUCE_DATA) return;
   let value = "" + Math.round(Math.random()*10);
   producer.send({ topic: TOPIC, messages: [ { key: "automaticData", value } ] });
-}, 5000)
+}, AUTO_PRODUCE_TIMER)
 
 io.on("connection", (socket) => {
   socket.on("messageFromClient", async (data) => {

@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>Confluent Demo - Client</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body class="app client">
+    <h1>MongoDB - Confluent Demo</h1>
+    <p>Please enter your name, and answer the following question. This will be sent to a Kafka topic, and automatically written to a database. A trigger will then process the entry, and write the processed message to a second collection, triggering the MongoDB Source.</p>
+    <p>You will be able to see you request go through the topics on our dashboard.</p>
+    <p><br/></p>
+    <form>
+      <div>
+        <label for="name">Name: </label>
+        <input id="name" type="text" />
+      </div>
+
+      <div>
+        <label for="vote">Have you used MongoDB before? </label>
+        <select id="vote"><option>Yes</option><option>No</option></select>
+      </div>
+
+      <div><br/></div>
+      <div>
+        <button class="mainformbtn" id="submitBtn" type="button">Send</button>
+      </div>
+    </form>
+
+    <script src="config.js"></script>
+    <script>
+
+      const submitBtn = document.querySelector("#submitBtn");
+      const nameField = document.querySelector("#name");
+      const voteField = document.querySelector("#vote");
+
+      submitBtn.addEventListener("click", async () => {
+        let name = nameField.value;
+        let vote = voteField.value;
+        let data = await fetch(`${BASE_URL}/send/${name}/${vote}`).then(r => r.json());
+        console.log(data);
+      });
+
+    </script>
+  </body>
+</html>

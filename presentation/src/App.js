@@ -1,4 +1,4 @@
-import { Deck, Slide, Footer, Title, Subtitle, Image, List, Text, Browser, Video } from "@sambego/diorama";
+import { Deck, Columns, Slide, Footer, Title, Subtitle, Image, List, Text, Browser, Video } from "@sambego/diorama";
 import ImageWithTitle from "./components/ImageWithTitle";
 import Multistep from "./components/Multistep";
 import CodeSlide from "./components/CodeSlide";
@@ -19,6 +19,8 @@ import ImgEventStream from "./assets/kafka-event-stream.png";
 import ImgEventStream2 from "./assets/kafka-event-stream-2.png";
 import ImgDemoDiagram from "./assets/demo-diagram.png";
 import ImgTopics from "./assets/topics.png";
+import ImgTopics2 from "./assets/topics2.png";
+import ImgTopics3 from "./assets/topics3.png";
 import ImgPartitions from "./assets/partitions.png";
 import ImgPartitions1 from "./assets/partitions-1.png";
 import ImgPartitions2 from "./assets/partitions-2.png";
@@ -30,6 +32,7 @@ import ImgPartitions7 from "./assets/partitions-7.png";
 import ImgShowCode from "./assets/show-me-the-code.jpg";
 import ImgMindBlown from "./assets/mindblown.gif";
 import ImgDemoDiagram2 from "./assets/demo-diagram-2.png";
+import ImgDemo from "./assets/demo.png";
 
 import './App.css';
 
@@ -37,9 +40,9 @@ const SHOW_NOTES = true;
 
 const talkProps = {
   title: "Data Metamorphosis with KafkaJS",
-  conference: "Prairie Dev Con - Regina",
-  conferenceHashTag: "#PrairieDevCon",
-  date: "October, 2022",
+  conference: "Connect.Tech",
+  conferenceHashTag: "#ConnectTech",
+  date: "November 2022",
   moreInfoUrl: "http://mdb.link/kafka"
 }
 
@@ -49,6 +52,28 @@ const footer = <Footer left={`@joel__lord ${talkProps.conferenceHashTag}`} right
 function App() {
   return (
     <Deck swipeToChange={false} footer={footer} presenterNotes={SHOW_NOTES}>
+      <Slide>
+        <Title>Data Metamorphosis With KafkaJS</Title>
+        <Columns>
+          <div>
+            <List>
+              <li style={{fontSize: "1.5em", fontWeight: "bold"}}>Expect</li>
+              <li style={{fontSize: "1.5em"}}>Intro to Kafka</li>
+              <li style={{fontSize: "1.5em"}}>Some JS Code</li>
+              <li style={{fontSize: "1.5em"}}>Database sync with Connectors</li>
+              <li style={{fontSize: "1.5em"}}>Bugs and failing demos</li>
+            </List>
+          </div>
+          <div>
+            <List>
+              <li style={{fontSize: "1.5em", fontWeight: "bold"}}>Don't expect</li>
+              <li style={{fontSize: "1.5em"}}>Data processing patterns</li>
+              <li style={{fontSize: "1.5em"}}>Actual cockroaches</li>
+            </List>
+          </div>
+        </Columns>
+      </Slide>
+      
       <ImageWithTitle 
         title={talkProps.title}
         img={ ImgBugs } 
@@ -112,6 +137,13 @@ function App() {
       </Slide>
 
       <Slide>
+        <Subtitle>Kafka Demo</Subtitle>
+        <Image src={ImgDemoDiagram} />
+      </Slide>
+
+      <Kafka />
+
+      <Slide>
         <Title>What is Kafka</Title>
         <Text>Database for events</Text>        
       </Slide>
@@ -167,7 +199,7 @@ value = JSON.parse(value.toString());
 `}
       </CodeSlide>
 
-      <Slide>
+      {/* <Slide>
         <Subtitle>Events</Subtitle>
         <List>
           <li>key &lt;Bytes []&gt;</li>
@@ -178,7 +210,7 @@ value = JSON.parse(value.toString());
       <Slide>
         <Subtitle>Kafka Demo</Subtitle>
         <Image src={ImgDemoDiagram} />
-      </Slide>
+      </Slide> */}
 
       <Kafka />
 
@@ -194,12 +226,23 @@ value = JSON.parse(value.toString());
 
       <Slide>
         <Subtitle>Topics</Subtitle>
+        <Image src={ImgTopics2} />
+      </Slide>
+
+      <Slide>
+        <Subtitle>Topics</Subtitle>
+        <Image src={ImgTopics3} />
+      </Slide>
+
+      <Slide>
+        <Subtitle>Topics</Subtitle>
         <Text>Topics are to Kafka what Collections are to MongoDB (or tables to MySQL)</Text>
       </Slide>
 
       <Slide>
         <Subtitle>Topics</Subtitle>
-        <Text>Topics are durable unindexed logs of events</Text>
+        <Text>Topics are durable unindexed logs of events.</Text>
+        <Text>(Hard to query)</Text>
       </Slide>
 
       <Slide>
@@ -215,6 +258,11 @@ value = JSON.parse(value.toString());
       <Slide>
         <Subtitle>Topics</Subtitle>
         <Text>Producers will write to a topic, and consumers will subscribe to them.</Text>
+      </Slide>
+
+      <Slide>
+        <Subtitle>Kafka Demo</Subtitle>
+        <Image src={ImgDemoDiagram} />
       </Slide>
 
       <Kafka />
@@ -287,6 +335,11 @@ value = JSON.parse(value.toString());
       </Slide>
 
       <Kafka />
+
+      <Slide>
+        <Subtitle>Groups</Subtitle>
+        <Text>Let's you scale your consumers, or have multiple processes consuming the same events.</Text>
+      </Slide>
 
       <Slide>
         <Subtitle>Brokers and replication</Subtitle>
@@ -400,11 +453,6 @@ consumer.run({
       </CodeSlide>
 
       <Slide>
-        <Subtitle>Groups</Subtitle>
-        <Text>Let's you scale your consumers, or have multiple processes consuming the same events.</Text>
-      </Slide>
-
-      <Slide>
         <Image src={ImgMindBlown} full />
       </Slide>
 
@@ -417,12 +465,28 @@ consumer.run({
       </Slide>
 
       <Slide>
+        <Subtitle>Demo</Subtitle>
+        <Image src={ImgDemo} />
+      </Slide>
+
+      <Slide>
+        <Subtitle>Data persistence</Subtitle>
+        <Text>Data can be persisted, but is hard to query.</Text>
+      </Slide>
+
+      <Slide>
+        <Subtitle>Connectors to the rescue</Subtitle>
+        <Text>Data synchronization can be achieved using connectors.</Text>
+      </Slide>
+
+      <Slide>
         <Subtitle>Connectors</Subtitle>
         <Image src={ImgDemoDiagram2} />
       </Slide>
 
       <Slide>
-        <Subtitle>Live demo?</Subtitle>
+        <Subtitle>Connector Demo</Subtitle>
+        <Text>https://mongodb-confluent-demo.com</Text>
       </Slide>
 
       <Slide>

@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Confluent Demo - Client</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body class="app dashboard">
+    <header>
+      <h1>MongoDB - Confluent Demo</h1>
+      <p>Test it out at <span id="address"></span></p>
+    </header>
+    <main>
+      <div class="tablehead">
+        <img src="img/table_header.png" />
+      </div>
+      <div class="tablehead">
+        <table>
+          <tbody>
+            <tr>
+              <td></td>
+              <td id="confIncoming"></td>
+              <td></td>
+              <td id="mdbIncoming"></td>
+              <td></td>
+              <td id="mdbProcessed"></td>
+              <td></td>
+              <td id="confProcessed"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+    <textarea class="hidden" rows="10" cols="120" id="messages"></textarea>
+
+    <span class="footer">
+      <a href="https://charts.mongodb.com/charts-confluenttour-dhjgj/public/dashboards/62444c00-37a4-4ecf-8742-873b5140c830" target="_blank">Charts</a>
+      <br/>
+      <span id="version"></span>
+    </span>
+
+    <script src="config.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>
